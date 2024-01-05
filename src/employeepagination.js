@@ -69,9 +69,7 @@ const EmployeePagination = () => {
           </tbody>
         </table>
       )}
-      <button onClick={prevPage} disabled={currentPage === 1}>
-        Previous
-      </button>
+      <button onClick={prevPage}>Previous</button>
       <button
         onClick={nextPage}
         disabled={currentPage === Math.ceil(employees.length / itemsPerPage)}

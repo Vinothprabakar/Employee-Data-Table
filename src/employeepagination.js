@@ -1,67 +1,48 @@
-import React, { useState, useEffect } from "react";
-
+import { useState, useEffect } from "react";
+import axios from "axios";
 const Pagination = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [error, setError] = useState(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
     fetchData();
-    console.log("Component updated!");
   }, []);
 
   const fetchData = async () => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
       );
-
-      if (response.status !== 200) {
-        throw new Error("Failed to fetch data");
-      }
-
-      const result = await response.json();
-      setData(result);
-      setError(null);
+      setData(response.data);
     } catch (error) {
-      setError(error.message);
+      alert("failed to fetch data");
     }
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  const handleClickNext = () => {
+  const nextPage = () => {
     if (currentPage < Math.ceil(data.length / itemsPerPage)) {
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(currentPage + 1);
     }
   };
 
-  const handleClickPrevious = () => {
+  const prevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
+      setCurrentPage(currentPage - 1);
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      alert("Failed to fetch data");
-    }
-  }, [error]);
 
   return (
-    <div>
-      {error && (
-        <div className="alert" role="alert">
-          {error}
-        </div>
-      )}
-
-      <table>
+    <div className="tableContainer">
+      <h1 className="tableTitle">Employee Data Table</h1>
+      <table className="dataTable">
         <thead>
-          <tr>
+          <tr className="tableHeader">
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
@@ -70,7 +51,7 @@ const Pagination = () => {
         </thead>
         <tbody>
           {currentItems.map((item) => (
-            <tr key={item.id}>
+            <tr key={item.id} className="tableRow">
               <td>{item.id}</td>
               <td>{item.name}</td>
               <td>{item.email}</td>
@@ -79,15 +60,25 @@ const Pagination = () => {
           ))}
         </tbody>
       </table>
-      <div className="pagination">
-        <button onClick={handleClickPrevious}>Previous</button>
-        <span>{currentPage}</span>
-        <button
-          onClick={handleClickNext}
-          disabled={currentPage === Math.ceil(data.length / itemsPerPage)}
-        >
-          Next
-        </button>
+
+      <div className="paginationContainer">
+        <div className="paginationButtons">
+          <button
+            onClick={prevPage}
+            className="paginationButton"
+            style={{ opacity: currentPage > 1 ? 1 : 0.5 }}
+          >
+            Previous
+          </button>
+          <span className="paginationCurrent">{currentPage}</span>
+          <button
+            onClick={nextPage}
+            className="paginationButton"
+            style={{ opacity: currentPage < totalPages ? 1 : 0.5 }}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );

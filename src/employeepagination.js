@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./pagination.css";
 
 const Pagination = () => {
   const [data, setData] = useState([]);
@@ -74,9 +73,7 @@ const Pagination = () => {
         </tbody>
       </table>
       <div className="pagination">
-        <button onClick={handleClickPrevious} disabled={currentPage === 1}>
-          Previous
-        </button>
+        <button onClick={handleClickPrevious}>Previous</button>
         <span>{currentPage}</span>
         <button
           onClick={handleClickNext}

@@ -1,94 +1,92 @@
 import React, { useState, useEffect } from "react";
+import "./pagination.css";
 
-const EmployeePagination = () => {
-  const [employees, setEmployees] = useState([]);
+const Pagination = () => {
+  const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const response = await fetch(
-          "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
-        );
-
-        if (!response.ok) {
-          throw new Error(
-            "Failed to retrieve employee data: Server returned an error"
-          );
-        }
-
-        const data = await response.json();
-        setEmployees(data);
-        setLoading(false);
-        setError(null);
-      } catch (error) {
-        alert("fetchDataFailed");
-        setLoading(false);
-      }
-    };
-
-    fetchEmployees();
+    fetchData();
   }, []);
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = employees.slice(indexOfFirstItem, indexOfLastItem);
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
+      );
 
-  const nextPage = () => {
-    if (currentPage < Math.ceil(employees.length / itemsPerPage)) {
-      setCurrentPage((prevPage) => prevPage + 1);
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
+      const result = await response.json();
+      setData(result);
+    } catch (error) {
+      alert("failed to fetch data");
+      setError(error.message);
     }
   };
 
-  const prevPage = () => {
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleClickNext = () => {
+    if (currentPage < Math.ceil(data.length / itemsPerPage)) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handleClickPrevious = () => {
     if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
+      setCurrentPage((prev) => prev - 1);
     }
   };
 
   return (
     <div>
-      {loading && <p>Loading...</p>}
-      {error && <div>Error: {error}</div>}
-      {!loading && !error && (
-        <div>
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((employee) => (
-                <tr key={employee.id}>
-                  <td>{employee.id}</td>
-                  <td>{employee.name}</td>
-                  <td>{employee.email}</td>
-                  <td>{employee.role}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button onClick={prevPage}>Previous</button>
-          <button
-            onClick={nextPage}
-            disabled={
-              currentPage === Math.ceil(employees.length / itemsPerPage)
-            }
-          >
-            Next
-          </button>
-          <p>Page {currentPage}</p>
+      {error && (
+        <div className="alert" role="alert">
+          {error}
         </div>
       )}
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentItems.map((item) => (
+            <tr key={item.id}>
+              <td>{item.id}</td>
+              <td>{item.name}</td>
+              <td>{item.email}</td>
+              <td>{item.role}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="pagination">
+        <button onClick={handleClickPrevious} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <span>{currentPage}</span>
+        <button
+          onClick={handleClickNext}
+          disabled={currentPage === Math.ceil(data.length / itemsPerPage)}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
 
-export default EmployeePagination;
+export default Pagination;

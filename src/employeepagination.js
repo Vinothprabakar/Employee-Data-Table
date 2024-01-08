@@ -16,7 +16,7 @@ const Pagination = () => {
         "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
       );
 
-      if (!response.ok) {
+      if (!response.statusCode === 200) {
         throw new Error("Failed to fetch data");
       }
 

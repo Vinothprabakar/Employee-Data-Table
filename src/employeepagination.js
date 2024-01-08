@@ -5,49 +5,53 @@ const EmployeePagination = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const fetchEmployees = async () => {
-    try {
-      const response = await fetch(
-        "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
-      );
-      const data = await response.json();
-      setEmployees(data);
-      setLoading(false);
-    } catch (error) {
-      setError(error.message || "Failed to fetch data");
-      setLoading(false);
-    }
-  };
+  const itemsPerPage = 10;
 
   useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await fetch(
+          "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const data = await response.json();
+        setEmployees(data);
+        setLoading(false);
+        setError(null);
+      } catch (error) {
+        setError("Failed to fetch data. Please try again later.");
+        setLoading(false);
+      }
+    };
+
     fetchEmployees();
   }, []);
 
-  const itemsPerPage = 10;
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = employees.slice(indexOfFirstItem, indexOfLastItem);
 
   const nextPage = () => {
     if (currentPage < Math.ceil(employees.length / itemsPerPage)) {
-      setCurrentPage(currentPage + 1);
+      setCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
   const prevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      setCurrentPage((prevPage) => prevPage - 1);
     }
   };
 
   return (
     <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <div>Error: {error}</div>
-      ) : (
+      {loading && <p>Loading...</p>}
+      {error && <div>Error: {error}</div>}
+      {!loading && !error && (
         <div>
           <table>
             <thead>

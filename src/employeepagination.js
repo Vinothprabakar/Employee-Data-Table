@@ -4,11 +4,9 @@ const Pagination = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState(null);
-  const itemsPerPage = 10;
+  const [fetchTrigger, setFetchTrigger] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const itemsPerPage = 10;
 
   const fetchData = async () => {
     try {
@@ -27,6 +25,13 @@ const Pagination = () => {
       setError(error.message);
     }
   };
+
+  useEffect(() => {
+    if (fetchTrigger) {
+      fetchData();
+      setFetchTrigger(false);
+    }
+  });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;

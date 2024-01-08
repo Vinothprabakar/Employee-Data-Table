@@ -4,18 +4,23 @@ const EmployeePagination = () => {
   const [employees, setEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [error] = useState(null);
+  const [error, setError] = useState(null);
 
   const fetchEmployees = async () => {
     try {
       const response = await fetch(
         "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
       );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data from the server");
+      }
+
       const data = await response.json();
       setEmployees(data);
       setLoading(false);
     } catch (error) {
-      alert("Failed to fetch");
+      setError(error.message || "Failed to fetch data");
       setLoading(false);
     }
   };

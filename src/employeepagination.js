@@ -4,9 +4,12 @@ const Pagination = () => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [error, setError] = useState(null);
-  const [fetchTrigger, setFetchTrigger] = useState(true);
-
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    fetchData();
+    console.log("Component updated!");
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -14,7 +17,7 @@ const Pagination = () => {
         "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
       );
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Failed to fetch data");
       }
 
@@ -25,13 +28,6 @@ const Pagination = () => {
       setError(error.message);
     }
   };
-
-  useEffect(() => {
-    if (fetchTrigger) {
-      fetchData();
-      setFetchTrigger(false);
-    }
-  });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;

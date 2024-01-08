@@ -4,14 +4,18 @@ const EmployeePagination = () => {
   const [employees, setEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error] = useState(null);
 
   const fetchEmployees = async () => {
     try {
       const response = await fetch(
         "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
       );
+      const data = await response.json();
+      setEmployees(data);
+      setLoading(false);
     } catch (error) {
-      alert("Failed to fetch data");
+      alert("Failed to fetch");
       setLoading(false);
     }
   };
@@ -41,36 +45,42 @@ const EmployeePagination = () => {
     <div>
       {loading ? (
         <p>Loading...</p>
+      ) : error ? (
+        <div>Error: {error}</div>
       ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.map((employee) => (
-              <tr key={employee.id}>
-                <td>{employee.id}</td>
-                <td>{employee.name}</td>
-                <td>{employee.email}</td>
-                <td>{employee.role}</td>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {currentItems.map((employee) => (
+                <tr key={employee.id}>
+                  <td>{employee.id}</td>
+                  <td>{employee.name}</td>
+                  <td>{employee.email}</td>
+                  <td>{employee.role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button onClick={prevPage}>Previous</button>
+          <button
+            onClick={nextPage}
+            disabled={
+              currentPage === Math.ceil(employees.length / itemsPerPage)
+            }
+          >
+            Next
+          </button>
+          <p>Page {currentPage}</p>
+        </div>
       )}
-      <button onClick={prevPage}>Previous</button>
-      <button
-        onClick={nextPage}
-        disabled={currentPage === Math.ceil(employees.length / itemsPerPage)}
-      >
-        Next
-      </button>
-      <p>Page {currentPage}</p>
     </div>
   );
 };

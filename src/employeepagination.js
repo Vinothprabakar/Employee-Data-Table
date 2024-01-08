@@ -15,7 +15,9 @@ const EmployeePagination = () => {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to fetch data");
+          throw new Error(
+            "Failed to retrieve employee data: Server returned an error"
+          );
         }
 
         const data = await response.json();
@@ -23,7 +25,7 @@ const EmployeePagination = () => {
         setLoading(false);
         setError(null);
       } catch (error) {
-        setError("Failed to fetch data. Please try again later.");
+        alert("fetchDataFailed");
         setLoading(false);
       }
     };

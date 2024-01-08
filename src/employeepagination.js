@@ -16,14 +16,14 @@ const Pagination = () => {
         "https://geektrust.s3-ap-southeast-1.amazonaws.com/adminui-problem/members.json"
       );
 
-      if (!response.statusCode === 200) {
+      if (!response.ok) {
         throw new Error("Failed to fetch data");
       }
 
       const result = await response.json();
       setData(result);
+      setError(null);
     } catch (error) {
-      alert("failed to fetch data");
       setError(error.message);
     }
   };
@@ -43,6 +43,12 @@ const Pagination = () => {
       setCurrentPage((prev) => prev - 1);
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      alert("Failed to fetch data");
+    }
+  }, [error]);
 
   return (
     <div>

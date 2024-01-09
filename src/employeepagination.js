@@ -24,6 +24,7 @@ const Pagination = () => {
       setData(result);
       setError(null);
     } catch (error) {
+      alert("failed to fetch data");
       setError(error.message);
     }
   };
